@@ -1,43 +1,56 @@
 import requests
 import pprint
-# URL API
-url = 'https://jsonplaceholder.typicode.com/posts'
-#создаем словарь
-data = {'title': 'foo', 'body': 'bar', 'userId': 1}
+from bs4 import BeautifulSoup
+from googletrans import Translator
 
-response = requests.post(url, data=data)
-print(response.status_code)
-print(f'ответ - {response.json()}')
+translator = Translator()
+#result = translator.translate(text='dog', dest='ru')
+#print(result.text)
 
-# URL API
-#url = 'https://jsonplaceholder.typicode.com/posts'
-# Параметры для GET-запроса
-#params = {
-   # 'userId': 1
-#}
-# Отправляем GET-запрос с параметрами
-#response = requests.get(url, params=params)
+# Создаём функцию, которая будет получать информацию
+def get_english_words():
+    url = "https://randomword.com/"
+    try:
+        response = requests.get(url)
+        # Создаём объект Soup
+        soup = BeautifulSoup(response.content, "html.parser")
+        # Получаем слово. text.strip удаляет все пробелы из результата
+        english_words = soup.find("div", id="random_word").text.strip()
+        # Получаем описание слова
+        word_definition = soup.find("div", id="random_word_definition").text.strip()
+        # Чтобы программа возвращала словарь
+        return {
+            "english_words": english_words,
+            "word_definition": word_definition
+        }
+    # Функция, которая сообщит об ошибке, но не остановит программу
+    except:
+        print("Произошла ошибка")
 
-#response_json = response.json()
-#pprint.pprint(response_json)
 
+# Создаём функцию, которая будет делать саму игру
+def word_game():
+    print("Добро пожаловать в игру")
+    while True:
+        # Создаём функцию, чтобы использовать результат функции-словаря
+        word_dict = get_english_words()
+        word = word_dict.get("english_words")
+        #word_definition = word_dict.get("word_definition")
+        word_definition_ru = translator.translate(text=word_dict.get("word_definition"), dest='ru').text
 
-#params = {
-   # 'q' : 'html'
-#}
-#response = requests.get('https://api.github.com/search/repositories', params=params)
-#print(response.status_code)
-#if response.ok:
-    #print('запрос успешно выполнен')
-#else:
-    #print('произошла ошибка')
+        # Начинаем игру
+        print(f"Значение слова - {word_definition_ru}")
+        user = input("Что это за слово? ")
+        user_en = translator.translate(text=user, dest='en').text
+        if user_en == word:
+            print("Все верно!")
+        else:
+            print(f"Ответ неверный, было загадано это слово - {translator.translate(text=word, dest='ru').text}")
 
-#print(response.text)
-#response_json = response.json()
-#pprint.pprint(response_json)
-#print(f"количество репозиториев с использованием html: {response_json['total_count']}")
+        # Создаём возможность закончить игру
+        play_again = input("Хотите сыграть еще раз? y/n")
+        if play_again != "y":
+            print("Спасибо за игру!")
+            break
 
-#img = 'https://netology.ru/_next/static/media/phone.42ed97e9.png'
-#response = requests.get(img)
-#with open('test.jpg', 'wb') as file:
-    #file.write(response.content)
+word_game()
