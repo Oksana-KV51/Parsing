@@ -7,7 +7,7 @@ class SvetnewparsSpider(scrapy.Spider):
     start_urls = ["https://www.divan.ru/tolyatti/category/svet"]
 
     def parse(self, response):
-        svets = response.css('div._Ud0k')
+        svets = response.css('div.LlPhw')
         # Настраиваем работу с каждым отдельным диваном в списке
         for svet in svets:
             yield {
