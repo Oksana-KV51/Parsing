@@ -21,9 +21,9 @@ parsed_data = []
 # Перебираем коллекцию
 for svet in svets:
     try:
-        name = svet.find_element(By.CSS_SELECTOR, 'span.name').text
-        count = svet.find_element(By.CSS_SELECTOR, 'span.ui-LD-ZU').text
-        link = svet.find_element(By.CSS_SELECTOR, 'a.ui-GPFV8').get_attribute('href')
+        name = svet.find_element(By.CSS_SELECTOR, 'span[itemprop="name"]').text
+        count = svet.find_element(By.CSS_SELECTOR, 'meta[itemprop="price"]').get_attribute('content')
+        link = svet.find_element(By.CSS_SELECTOR, 'a.ui-GPFV8.qUioe.ProductName.ActiveProduct').get_attribute('href')
    # Вставляем блок except на случай ошибки - в случае ошибки программа попытается продолжать
     except:
         print("произошла ошибка при парсинге")
@@ -43,3 +43,5 @@ with open("svet.csv", 'w', newline='', encoding='utf-8') as file:
     writer.writerow(['Название товара', 'цена', 'ссылка на товар'])
 # Прописываем использование списка как источника для рядов таблицы
     writer.writerows(parsed_data)
+
+
